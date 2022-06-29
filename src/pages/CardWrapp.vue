@@ -9,7 +9,8 @@
         <input
           type="text"
           v-model="title"
-          class="w-full outline-none bg-[#ebecf0]"
+          id="title_input"
+          :class="color"
           ref="card_title"
         />
         <span>0</span>
@@ -28,33 +29,10 @@
           >
             <li
               class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
+              v-for="(item, index) in listData"
+              :key="index"
             >
-              <button class="btn" name="btn1">black</button>
-            </li>
-            <li
-              class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
-            >
-              <button class="btn" name="btn2">red</button>
-            </li>
-            <li
-              class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
-            >
-              <button class="btn" name="btn3">yellow</button>
-            </li>
-            <li
-              class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
-            >
-              <button class="btn" name="btn4">green</button>
-            </li>
-            <li
-              class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
-            >
-              <button class="btn" name="btn5">purple</button>
-            </li>
-            <li
-              class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
-            >
-              <button class="btn" name="btn6">pink</button>
+              <button :name="item.name">{{ item.contex }}</button>
             </li>
           </ul>
           <!--  end of color dropdown  -->
@@ -102,6 +80,7 @@ export default {
   },
   data() {
     return {
+      color: "",
       title: "Enter list title",
       task_title: "",
       task_result: "untiled",
@@ -112,13 +91,23 @@ export default {
           id: 1,
         },
       ],
+
+      listData: [
+        { contex: "black", name: "color_black" },
+        { contex: "red", name: "color_red" },
+        { contex: "yellow", name: "color_yellow" },
+        { contex: "green", name: "color_green" },
+        { contex: "blue", name: "color_blue" },
+        { contex: "purple", name: "color_purple" },
+        { contex: "pink", name: "color_pink" },
+      ],
     };
   },
   methods: {
     example(e) {
       const el = e.target.name;
       if (e.target.name === undefined) return;
-      console.log("class", this.$refs.card_title);
+      this.color = el;
     },
     //  bu funksiya yange card yaratish uchun ishlatiladi
     addTask() {
@@ -170,6 +159,10 @@ export default {
 };
 </script>
 <style>
+#title_input {
+  outline: none;
+  background: #ebecf0;
+}
 .drop-list {
   cursor: pointer;
   transition: 0.3s linear all;
@@ -180,25 +173,25 @@ export default {
   background: #9ca3af;
 }
 /* color classes */
-.color_1 {
+.color_black {
   color: #000;
 }
-.btn2 {
+.color_red {
   color: #ef4444;
 }
-.color_3 {
+.color_yellow {
   color: #f59e0b;
 }
-.color_4 {
+.color_green {
   color: #10b981;
 }
-.color_5 {
+.color_blue {
   color: #3b82f6;
 }
-.color_6 {
+.color_purple {
   color: #8b5cf6;
 }
-.color_7 {
+.color_pink {
   color: #ec4899;
 }
 /*  */

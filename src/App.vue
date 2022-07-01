@@ -1,6 +1,6 @@
 <template>
   <section class="section">
-    <div class="flex mt-4 gap-7 flex-wrap">
+    <div class="flex mt-4 gap-7 flex-wrap items-start">
       <CardWrapp />
     </div>
   </section>

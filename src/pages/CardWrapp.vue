@@ -1,140 +1,98 @@
 <template>
-  <transition-group
-    name="flip-list"
-    class="flex mt-4 gap-7 flex-wrap items-start"
-    tag="div"
-  >
-    <section
-      class="bg-[#ebecf0] min-w-min p-2 rounded-lg"
-      v-for="(item, i) in tasks"
-      @dragover="(e) => onDragOver(item, i, e)"
-      @dragend="(e) => finishDrag(item, i, e)"
-      @dragstart="(e) => startDrag(item, i, e)"
-      :key="item.id"
-      draggable="true"
+  <section class="flex my-4 flex-wrap gap-3 items-start">
+    <transition-group
+      name="flip-list"
+      class="flex gap-5 flex-wrap items-start"
+      tag="div"
     >
-      <header class="flex items-center justify-between">
-        <div class="flex items-center basis-1/2 gap-2">
-          <input
-            type="text"
-            v-model="item.title"
-            id="title_input"
-            :class="item.title_color"
-          />
-          <span>{{ item.cardData.length }}</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <div class="relative">
+      <section
+        class="bg-[#ebecf0] min-w-min p-2 rounded-lg"
+        v-for="(item, i) in tasks"
+        @dragover="(e) => onDragOver(item, i, e)"
+        @dragend="(e) => finishDrag(item, i, e)"
+        @dragstart="(e) => startDrag(item, i, e)"
+        :key="item.id"
+        draggable="true"
+      >
+        <header class="flex items-center justify-between">
+          <div class="flex items-center basis-1/2 gap-2">
+            <input
+              type="text"
+              v-model="item.title"
+              id="title_input"
+              :class="item.title_color"
+            />
+            <span>{{ item.cardData.length }}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <button
+                class="text-lg px-1 rounded-md transition duration-300 ease-linear hover:bg-white"
+                @click="showDrop(item.id)"
+              >
+                <i class="bi bi-three-dots"></i>
+              </button>
+              <!-- color dropdown list -->
+              <ul :class="[item.show ? 'drop-down drop-active' : 'drop-down']">
+                <li
+                  class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
+                  v-for="(data, index) in listData"
+                  :key="index"
+                >
+                  <button
+                    @click="
+                      item.title_color = data.name;
+                      item.show = false;
+                    "
+                  >
+                    {{ data.contex }}
+                  </button>
+                </li>
+              </ul>
+              <!--  end of color dropdown  -->
+            </div>
+
             <button
               class="text-lg px-1 rounded-md transition duration-300 ease-linear hover:bg-white"
-              @click="showDrop(item.id)"
+              @click="filterData(item.id)"
             >
-              <i class="bi bi-three-dots"></i>
+              <i class="bi bi-x"></i>
             </button>
-            <!-- color dropdown list -->
-            <ul :class="[item.show ? 'drop-down drop-active' : 'drop-down']">
-              <li
-                class="transition duration-300 easy-linear py-0.5 px-1 text-sm hover:bg-white"
-                v-for="(data, index) in listData"
-                :key="index"
-              >
-                <button
-                  @click="
-                    item.title_color = data.name;
-                    item.show = false;
-                  "
-                >
-                  {{ data.contex }}
-                </button>
-              </li>
-            </ul>
-            <!--  end of color dropdown  -->
           </div>
+        </header>
 
-          <button
-            class="text-lg px-1 rounded-md transition duration-300 ease-linear hover:bg-white"
-            @click="filterData(item.id)"
-          >
-            <i class="bi bi-x"></i>
-          </button>
-        </div>
-      </header>
-
-      <!-- card input -->
-      <!-- drag and drop -->
-
-      <div
-        class="w-full flex items-center justify-between p-0.5 bg-white rounded my-2"
-        v-for="(info, i) in item.cardData"
-        draggable="true"
-        :key="info"
-      >
-        <input
-          type="text"
-          class="outline-none p-0.5 px-2"
-          v-model="info.data_title"
+        <InputBox
+          :newArray="item.cardData"
+          @filterInput="filterCardData"
+          @showColor="showCartColor"
         />
 
-        <div class="flex gap-2 items-center">
-          <div class="relative">
-            <button
-              :class="info.card_priority"
-              id="circle-btn"
-              @click="showCartColor(info.id)"
-            ></button>
-            <ul :class="[info.isOpen ? 'cart-drop cart-open' : 'cart-drop']">
-              <li
-                :class="cartColor.activeClass"
-                v-for="(cartColor, i) in cartColors"
-              >
-                <button
-                  class="p-0.5 h-full w-[100px] text-sm text-white transition duration-300 hover:bg-[#5cacf3]"
-                  @click="
-                    info.card_priority = cartColor.activeClass;
-                    info.isOpen = false;
-                  "
-                >
-                  {{ cartColor.btnContext }}
-                </button>
-              </li>
-            </ul>
-          </div>
+        <form
+          @submit.prevent="pushData(item.id)"
+          class="flex items-center justify-between my-4 mt-5 shadow-md border border-gray-300 rounded-sm py-2"
+        >
+          <input
+            type="text"
+            placeholder="Add new task"
+            class="bg-[#ebecf0] placeholder:text-black text-sm px-2 outline-none"
+            v-model="item.inputText"
+          />
 
-          <button
-            class="text-lg px-1 transition duration-300 ease-linear hover:text-pink-400"
-            @click="filterCardData(info.id)"
-          >
-            <i class="bi bi-x"></i>
-          </button>
-        </div>
-      </div>
+          <button class="text-sm px-1">Create</button>
+        </form>
+      </section>
+    </transition-group>
 
-      <!--  end of drag and drop -->
-
-      <form
-        @submit.prevent="pushData(item.id)"
-        class="flex items-center justify-between my-4 mt-5 shadow-md border border-gray-300 rounded-sm py-2"
-      >
-        <input
-          type="text"
-          placeholder="Add new task"
-          class="bg-[#ebecf0] placeholder:text-black text-sm px-2 outline-none"
-          v-model="item.inputText"
-        />
-
-        <button class="text-sm px-1">Create</button>
-      </form>
-    </section>
-  </transition-group>
-
-  <CreateCart @onclick="addCard" />
+    <CreateCart @onclick="addCard" />
+  </section>
 </template>
 <script>
 import CreateCart from "@/components/CreateCart.vue";
-
+import InputBox from "../components/InputBox.vue";
 export default {
   components: {
     CreateCart,
+    InputBox,
   },
   data() {
     return {
@@ -150,12 +108,6 @@ export default {
         { contex: "blue", name: "color_blue" },
         { contex: "purple", name: "color_purple" },
         { contex: "pink", name: "color_pink" },
-      ],
-      cartColors: [
-        { activeClass: "expedite", btnContext: "expedite" },
-        { activeClass: "normal", btnContext: "normal priority" },
-        { activeClass: "critical", btnContext: "not critical" },
-        { activeClass: "priority", btnContext: "low priority" },
       ],
     };
   },
@@ -174,7 +126,6 @@ export default {
       this.startLoc = e.clientY;
       this.dragging = true;
       this.dragFrom = item;
-      console.log(this.dragFrom);
     },
     finishDrag(item, pos) {
       this.tasks.splice(pos, 1);
@@ -203,6 +154,7 @@ export default {
             id: Math.random() * 10000,
             isOpen: false,
             card_priority: "expedite",
+            border_color: "",
           },
         ],
       });
